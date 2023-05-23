@@ -5,6 +5,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+#include <fstream>
 #include "Line.h"
 
 void printVideoInfo(const cv::VideoCapture vc);

@@ -35,8 +35,8 @@ int main(int argc, char** argv)
   }
   printVideoInfo(vc);
   Mat frame;
-  int frameIndex = int(vc.get(CV_CAP_PROP_FRAME_COUNT)) / 2;
-  vc.set(CV_CAP_PROP_POS_FRAMES, frameIndex);
+  int frameIndex = int(vc.get(CAP_PROP_FRAME_COUNT)) / 2;
+  vc.set(CAP_PROP_POS_FRAMES, frameIndex);
   if (!vc.read(frame))
   {
     std::cerr << "Failed to read frame with index " << frameIndex << std::endl;
