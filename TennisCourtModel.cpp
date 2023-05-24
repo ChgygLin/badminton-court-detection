@@ -143,9 +143,9 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
   {
     for (auto& modelVLinePair: vLinePairs)
     {
-      std::vector<Point2f> modelPoints = getIntersectionPoints(modelHLinePair, modelVLinePair);
-      Mat matrix = getPerspectiveTransform(modelPoints, points);
-      std::vector<Point2f> transformedModelPoints(16);
+      std::vector<Point2f> modelPoints = getIntersectionPoints(modelHLinePair, modelVLinePair);   // 两横两竖, 4个交点, 若交点在图像外怎么处理?
+      Mat matrix = getPerspectiveTransform(modelPoints, points);    // 4对点计算透视变换矩阵
+      std::vector<Point2f> transformedModelPoints(16);    // 整个球场所有的交点数, 透视变换的点在图像外怎么处理?
       perspectiveTransform(courtPoints, transformedModelPoints, matrix);
       float score = evaluateModel(transformedModelPoints, binaryImage);
       if (score > bestScore)
@@ -265,21 +265,21 @@ float TennisCourtModel::computeScoreForLineSegment(const cv::Point2f& start, con
   const cv::Mat& binaryImage)
 {
   float score = 0;
-  float fgScore = 1;
-  float bgScore = -0.5;
-  int length = round(distance(start, end));
+  float fgScore = 1;      // 前景像素的得分
+  float bgScore = -0.5;   // 背景像素的得分
+  int length = round(distance(start, end));   // 计算线段长度并四舍五入为整数
 
-  Point2f vec = normalize(end-start);
+  Point2f vec = normalize(end-start);     // 计算线段的单位向量
 
-  for (int i = 0; i < length; ++i)
+  for (int i = 0; i < length; ++i)    // 迭代线段上的每个点
   {
-    Point2f p = start + i*vec;
+    Point2f p = start + i*vec;      // 计算线段上的点的坐标
     int x = round(p.x);
     int y = round(p.y);
     if (isInsideTheImage(x, y, binaryImage))
     {
       uchar imageValue = binaryImage.at<uchar>(y,x);
-      if (imageValue == GlobalParameters().fgValue)
+      if (imageValue == GlobalParameters().fgValue)   // 根据像素值分配得分,fgValue为白色255
       {
         score += fgScore;
       }

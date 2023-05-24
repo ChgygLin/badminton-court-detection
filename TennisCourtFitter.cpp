@@ -93,11 +93,11 @@ void TennisCourtFitter::getHorizontalAndVerticalLines(const std::vector<Line>& l
   }
 }
 
-
+// 对水平直线进行排序
 void TennisCourtFitter::sortHorizontalLines(std::vector<Line>& hLines, const cv::Mat& rgbImage)
 {
   float x = rgbImage.cols / 2.0;
-  sortLinesByDistanceToPoint(hLines, Point2f(x, 0));
+  sortLinesByDistanceToPoint(hLines, Point2f(x, 0));    // 计算每条直线到点(x,0)的距离, 然后使用std::sort算法进行排序
 
   if (false)
   {
@@ -110,10 +110,11 @@ void TennisCourtFitter::sortHorizontalLines(std::vector<Line>& hLines, const cv:
   }
 }
 
+// 对竖直直线进行排序
 void TennisCourtFitter::sortVerticalLines(std::vector<Line>& vLines, const cv::Mat& rgbImage)
 {
   float y = rgbImage.rows / 2.0;
-  sortLinesByDistanceToPoint(vLines, Point2f(0, y));
+  sortLinesByDistanceToPoint(vLines, Point2f(0, y));    // 计算每条直线到点(0,y)的距离, 然后使用std::sort算法进行排序
 
   if (false)
   {

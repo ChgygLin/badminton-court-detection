@@ -8,14 +8,19 @@
 
 using namespace cv;
 
+/*
+  从极坐标形式的线条参数（即极径和极角）转换到笛卡尔坐标系下的线条参数。
+  线条在极坐标形式下的参数 rho 和 theta。
+*/
 Line Line::fromRhoTheta(float rho, float theta)
 {
-  double a = cos(theta), b = sin(theta);
-  double x0 = a * rho, y0 = b * rho;
-  Point2f p1((x0 + 2000 * (-b)),
-    (y0 + 2000 * (a)));
-  Point2f p2((x0 - 2000 * (-b)),
-    (y0 - 2000 * (a)));
+  double a = cos(theta), b = sin(theta);  // 根据极角theta计算出直线在笛卡尔坐标系下的斜率a,b
+  double x0 = a * rho, y0 = b * rho;  // 根据极径rho和斜率a、b,计算出直线在笛卡尔坐标系下的截距
+
+  // 根据截距x0,y0,以及一个固定长度的线段（这里是2000), 计算出直线在笛卡尔坐标系下的两个端点p1和p2.
+  Point2f p1((x0 + 2000 * (-b)), (y0 + 2000 * (a)));
+  Point2f p2((x0 - 2000 * (-b)), (y0 - 2000 * (a)));
+
   return Line::fromTwoPoints(p1, p2);
 }
 
@@ -79,8 +84,8 @@ bool Line::isDuplicate(const Line& otherLine) const
 
 void Line::toImplicit(cv::Point2f& n, float& c) const
 {
-  n = perpendicular(v);
-  c = n.dot(u);
+  n = perpendicular(v);   // 直线的法向量. 如果(a, b)是直线的方向向量, 则(-b, a)是直线的法向量
+  c = n.dot(u);   // 直线到原点的距离
 }
 
 
@@ -90,6 +95,8 @@ bool Line::isVertical() const
   float c;
   toImplicit(n, c);
 
+  // atan2(n.y, n.x) : 法向量的极角theta
+  // 判断theta是否在65度与-65度之间
   return (fabs(atan2(n.y, n.x)) < 65 * CV_PI / 180) || (fabs(atan2(-n.y, -n.x)) < 65 * CV_PI / 180);
 }
 
