@@ -31,107 +31,177 @@ using namespace cv;
 
 TennisCourtModel::TennisCourtModel()
 {
-  Point2f hVector(1, 0);
-  const Line upperBaseLine = Line(Point2f(0, 0), hVector);
-  const Line upperServiceLine = Line(Point2f(0, 5.49), hVector);
-  const Line netLine = Line(Point2f(0, 11.89), hVector);
-  const Line lowerServiceLine = Line(Point2f(0, 18.29), hVector);
-  const Line lowerBaseLine = Line(Point2f(0, 23.78), hVector);
+  Point2f hVector(1, 0);    // 单位向量
+  const Line up_long_service_line_for_singles = Line(Point2f(0.02, 0.02), hVector);
+  const Line up_long_service_line_for_doubles = Line(Point2f(0.02, 0.78), hVector);
+  const Line up_short_service_line = Line(Point2f(0.02, 4.7), hVector);
+  const Line down_short_service_line = Line(Point2f(0.02, 8.7), hVector);
+  const Line down_long_service_line_for_doubles = Line(Point2f(0.02, 12.62), hVector);
+  const Line down_long_service_line_for_singles = Line(Point2f(0.02, 13.38), hVector);
+
   hLines = {
-    upperBaseLine, upperServiceLine, netLine, lowerServiceLine, lowerBaseLine
+    up_long_service_line_for_singles, \
+    up_long_service_line_for_doubles, \
+    up_short_service_line, \
+    down_short_service_line, \
+    down_long_service_line_for_doubles, \
+    down_long_service_line_for_singles
   };
 
-  Point2f vVector(0, 1);
-  const Line leftSideLine = Line(Point2f(0, 0), vVector);
-  const Line leftSinglesLine = Line(Point2f(1.37, 0), vVector);
-  const Line centreServiceLine = Line(Point2f(5.485, 0), vVector);
-  const Line rightSinglesLine = Line(Point2f(9.6, 0), vVector);
-  const Line rightSideLine = Line(Point2f(10.97, 0), vVector);
+  Point2f vVector(0, 1);    // 单位向量
+  const Line left_side_line_for_doubles = Line(Point2f(0.02, 0.02), vVector);
+  const Line left_side_line_for_singles = Line(Point2f(0.48, 0.02), vVector);
+  const Line centre_line = Line(Point2f(3.05, 0.02), vVector);
+  const Line right_side_line_for_singles = Line(Point2f(5.62, 0.02), vVector);
+  const Line right_side_line_for_doubles = Line(Point2f(6.08, 0.02), vVector);
+
   vLines = {
-    leftSideLine, leftSinglesLine, centreServiceLine, rightSinglesLine, rightSideLine
+    left_side_line_for_doubles, \
+    left_side_line_for_singles, \
+    centre_line, \
+    right_side_line_for_singles, \
+    right_side_line_for_doubles
   };
 
-  // TODO do not contrain to only these lines
-//  hLinePairs = getPossibleLinePairs(hLines);
-//  vLinePairs = getPossibleLinePairs(vLines);
-  hLinePairs.push_back(std::make_pair(hLines[0], hLines[4]));
-  hLinePairs.push_back(std::make_pair(hLines[0], hLines[3]));
-  hLinePairs.push_back(std::make_pair(hLines[1], hLines[3]));
-  hLinePairs.push_back(std::make_pair(hLines[1], hLines[4]));
 
+  hLinePairs = getPossibleLinePairs(hLines);
+  vLinePairs = getPossibleLinePairs(vLines);
 
-  vLinePairs.push_back(std::make_pair(vLines[0], vLines[4]));
-  vLinePairs.push_back(std::make_pair(vLines[0], vLines[3]));
-  vLinePairs.push_back(std::make_pair(vLines[1], vLines[4]));
-  vLinePairs.push_back(std::make_pair(vLines[1], vLines[3]));
 
   Point2f point;
-  if (upperBaseLine.computeIntersectionPoint(leftSideLine, point))
+  if (up_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_doubles, point))
   {
     courtPoints.push_back(point); // P1
   }
-  if (lowerBaseLine.computeIntersectionPoint(leftSideLine, point))
+  if (up_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_singles, point))
   {
     courtPoints.push_back(point); // P2
   }
-  if (lowerBaseLine.computeIntersectionPoint(rightSideLine, point))
+  if (up_long_service_line_for_singles.computeIntersectionPoint(centre_line, point))
   {
     courtPoints.push_back(point); // P3
   }
-  if (upperBaseLine.computeIntersectionPoint(rightSideLine, point))
+  if (up_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_singles, point))
   {
     courtPoints.push_back(point);  // P4
   }
-  if (upperBaseLine.computeIntersectionPoint(leftSinglesLine, point))
+  if (up_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_doubles, point))
   {
     courtPoints.push_back(point);  // P5
   }
-  if (lowerBaseLine.computeIntersectionPoint(leftSinglesLine, point))
+
+
+  if (up_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_doubles, point))
   {
-    courtPoints.push_back(point);  // P6
+    courtPoints.push_back(point); // P1
   }
-  if (lowerBaseLine.computeIntersectionPoint(rightSinglesLine, point))
+  if (up_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_singles, point))
   {
-    courtPoints.push_back(point);  // P7
+    courtPoints.push_back(point); // P2
   }
-  if (upperBaseLine.computeIntersectionPoint(rightSinglesLine, point))
+  if (up_long_service_line_for_doubles.computeIntersectionPoint(centre_line, point))
   {
-    courtPoints.push_back(point);  // P8
+    courtPoints.push_back(point); // P3
   }
-  if (leftSinglesLine.computeIntersectionPoint(upperServiceLine, point))
+  if (up_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_singles, point))
   {
-    courtPoints.push_back(point);  // P9
+    courtPoints.push_back(point);  // P4
   }
-  if (rightSinglesLine.computeIntersectionPoint(upperServiceLine, point))
+  if (up_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_doubles, point))
   {
-    courtPoints.push_back(point);  // P10
-  }
-  if (leftSinglesLine.computeIntersectionPoint(lowerServiceLine, point))
-  {
-    courtPoints.push_back(point);  // P11
-  }
-  if (rightSinglesLine.computeIntersectionPoint(lowerServiceLine, point))
-  {
-    courtPoints.push_back(point);  // P12
-  }
-  if (upperServiceLine.computeIntersectionPoint(centreServiceLine, point))
-  {
-    courtPoints.push_back(point);  // P13
-  }
-  if (lowerServiceLine.computeIntersectionPoint(centreServiceLine, point))
-  {
-    courtPoints.push_back(point);  // P14
-  }
-  if (leftSideLine.computeIntersectionPoint(netLine, point))
-  {
-    courtPoints.push_back(point);  // P15
-  }
-  if (rightSideLine.computeIntersectionPoint(netLine, point))
-  {
-    courtPoints.push_back(point);  // P16
+    courtPoints.push_back(point);  // P5
   }
 
-  assert(courtPoints.size() == 16);
+
+  if (up_short_service_line.computeIntersectionPoint(left_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point); // P1
+  }
+  if (up_short_service_line.computeIntersectionPoint(left_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point); // P2
+  }
+  if (up_short_service_line.computeIntersectionPoint(centre_line, point))
+  {
+    courtPoints.push_back(point); // P3
+  }
+  if (up_short_service_line.computeIntersectionPoint(right_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point);  // P4
+  }
+  if (up_short_service_line.computeIntersectionPoint(right_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point);  // P5
+  }
+
+
+  if (down_short_service_line.computeIntersectionPoint(left_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point); // P1
+  }
+  if (down_short_service_line.computeIntersectionPoint(left_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point); // P2
+  }
+  if (down_short_service_line.computeIntersectionPoint(centre_line, point))
+  {
+    courtPoints.push_back(point); // P3
+  }
+  if (down_short_service_line.computeIntersectionPoint(right_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point);  // P4
+  }
+  if (down_short_service_line.computeIntersectionPoint(right_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point);  // P5
+  }
+
+
+  if (down_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point); // P1
+  }
+  if (down_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point); // P2
+  }
+  if (down_long_service_line_for_doubles.computeIntersectionPoint(centre_line, point))
+  {
+    courtPoints.push_back(point); // P3
+  }
+  if (down_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point);  // P4
+  }
+  if (down_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point);  // P5
+  }
+
+
+  if (down_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point); // P1
+  }
+  if (down_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point); // P2
+  }
+  if (down_long_service_line_for_singles.computeIntersectionPoint(centre_line, point))
+  {
+    courtPoints.push_back(point); // P3
+  }
+  if (down_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_singles, point))
+  {
+    courtPoints.push_back(point);  // P4
+  }
+  if (down_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_doubles, point))
+  {
+    courtPoints.push_back(point);  // P5
+  }
+
+
+  assert(courtPoints.size() == 30);
 }
 
 TennisCourtModel::TennisCourtModel(const TennisCourtModel& o)
@@ -163,7 +233,7 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
     {
       std::vector<Point2f> modelPoints = getIntersectionPoints(modelHLinePair, modelVLinePair);   // 两横两竖, 4个交点, 若交点在图像外怎么处理?
       Mat matrix = getPerspectiveTransform(modelPoints, points);    // 4对点计算透视变换矩阵
-      std::vector<Point2f> transformedModelPoints(16);    // 整个球场所有的交点数, 透视变换的点在图像外怎么处理?
+      std::vector<Point2f> transformedModelPoints(30);    // 整个球场所有的交点数, 透视变换的点在图像外怎么处理?
       perspectiveTransform(courtPoints, transformedModelPoints, matrix);
       float score = evaluateModel(transformedModelPoints, binaryImage);
       if (score > bestScore)
