@@ -21,6 +21,9 @@ using namespace cv;
  * 0.76,0.8     0.78
  * --------------------------------------------------------------------------
  * 4.68,4.72    4.7
+ *
+ *                             center: (3.05, 6.7)
+ * 
  * --------------------------------------------------------------------------
  * 8.68,8.72    8.7     
  * --------------------------------------------------------------------------
@@ -292,29 +295,66 @@ std::vector<LinePair> TennisCourtModel::getPossibleLinePairs(std::vector<Line>& 
   return linePairs;
 }
 
+void TennisCourtModel::show()
+{
+  int w,h, cw, ch;
+
+  int ratio = 100;
+  int dx,dy;
+
+  w = 1000;
+  h = 1600;
+  cw = w/2;
+  ch = h/2;
+
+  Mat image(h, w, CV_8UC3, Scalar(255, 255, 255));
+  Point2f center_p(3.05, 6.7);
+
+  dx = cw - ratio * center_p.x;
+  dy = ch - ratio * center_p.y;
+
+  std::vector<Point2f> transformedModelPoints(30);
+  char text[10];
+  for (int i=0; i<30; i++)
+  {
+    transformedModelPoints[i].x = ratio * courtPoints[i].x + dx;
+    transformedModelPoints[i].y = ratio * courtPoints[i].y + dy;
+
+    sprintf(text, "%d", i);
+    circle(image, Point(transformedModelPoints[i].x, transformedModelPoints[i].y), 8, Scalar(0, 0, 255), -1);
+    putText(image, text, Point(transformedModelPoints[i].x-20, transformedModelPoints[i].y-10), FONT_HERSHEY_COMPLEX, 1.0, Scalar(0, 0, 255), 2);
+  }
+
+  drawModel(transformedModelPoints, image, (0, 0, 0));
+  displayImage("TennisCourtModel", image);
+}
+
 
 void TennisCourtModel::drawModel(cv::Mat& image, Scalar color)
 {
-  std::vector<Point2f> transformedModelPoints(16);
+  std::vector<Point2f> transformedModelPoints(30);
   perspectiveTransform(courtPoints, transformedModelPoints, transformationMatrix);
   drawModel(transformedModelPoints, image, color);
 }
 
 void TennisCourtModel::drawModel(std::vector<Point2f>& courtPoints, Mat& image, Scalar color)
 {
-  drawLine(courtPoints[0], courtPoints[1], image, color);
-  drawLine(courtPoints[1], courtPoints[2], image, color);
-  drawLine(courtPoints[2], courtPoints[3], image, color);
-  drawLine(courtPoints[3], courtPoints[0], image, color);
+  // 6 lines
+  drawLine(courtPoints[0], courtPoints[4], image, color);
+  drawLine(courtPoints[5], courtPoints[9], image, color);
+  drawLine(courtPoints[10], courtPoints[14], image, color);
+  drawLine(courtPoints[15], courtPoints[19], image, color);
+  drawLine(courtPoints[20], courtPoints[24], image, color);
+  drawLine(courtPoints[25], courtPoints[29], image, color);
 
-  drawLine(courtPoints[4], courtPoints[5], image, color);
-  drawLine(courtPoints[6], courtPoints[7], image, color);
 
-  drawLine(courtPoints[8], courtPoints[9], image, color);
-  drawLine(courtPoints[10], courtPoints[11], image, color);
-
-  drawLine(courtPoints[12], courtPoints[13], image, color);
-  drawLine(courtPoints[14], courtPoints[15], image, color);
+  // 6 lines
+  drawLine(courtPoints[0], courtPoints[25], image, color);
+  drawLine(courtPoints[1], courtPoints[26], image, color);
+  drawLine(courtPoints[2], courtPoints[12], image, color);
+  drawLine(courtPoints[17], courtPoints[27], image, color);
+  drawLine(courtPoints[3], courtPoints[28], image, color);
+  drawLine(courtPoints[4], courtPoints[29], image, color);
 }
 
 

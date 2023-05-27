@@ -130,6 +130,8 @@ void TennisCourtFitter::sortVerticalLines(std::vector<Line>& vLines, const cv::M
 
 void TennisCourtFitter::findBestModelFit(const cv::Mat& binaryImage, const cv::Mat& rgbImage)
 {
+  int h, v;
+  h=v=0;
   float bestScore = GlobalParameters().initialFitScore;
   for (auto& hLinePair: hLinePairs)
   {
@@ -142,7 +144,11 @@ void TennisCourtFitter::findBestModelFit(const cv::Mat& binaryImage, const cv::M
         bestScore = score;
         bestModel = model;
       }
+      printf("h: (%d, %ld)    v: (%d, %ld)\n", h, hLinePairs.size(), v, vLinePairs.size());
+      v++;
     }
+    h++;
+    v=0;
   }
 
   if (debug)

@@ -19,6 +19,8 @@ void printVideoInfo(const cv::VideoCapture vc)
 
 void displayImage(const string& windowName, const Mat& image, int delay)
 {
+  // namedWindow(windowName, 0);
+  // resizeWindow(windowName, 1800, 900);
   namedWindow(windowName, WINDOW_AUTOSIZE);
   imshow(windowName, image);
   waitKey(delay);

@@ -48,6 +48,11 @@ int main(int argc, char** argv)
   CourtLineCandidateDetector courtLineCandidateDetector;
   TennisCourtFitter tennisCourtFitter;
 
+  // debug
+  // TennisCourtModel model;
+  // model.show();
+  // return 0;
+
   std::cout << "Starting court line detection algorithm..." << std::endl;
   try
   {

@@ -21,6 +21,7 @@ public:
     const cv::Mat& rgbImage);
 
   static std::vector<LinePair> getPossibleLinePairs(std::vector<Line>& lines);
+  void show();
 
   void drawModel(cv::Mat& image, cv::Scalar color=cv::Scalar(0, 255, 255));
 

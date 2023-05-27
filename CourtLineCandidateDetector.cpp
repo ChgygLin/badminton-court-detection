@@ -63,7 +63,7 @@ std::vector<Line> CourtLineCandidateDetector::extractLines(const cv::Mat& binary
 {
   std::vector<cv::Point2f> tmpLines;
 
-  HoughLines(binaryImage, tmpLines, 1, CV_PI / 180, parameters.houghThreshold);   // 按照1度的分辨率对二值化图像进行霍夫变换，提取线条候选区域 
+  HoughLines(binaryImage, tmpLines, 1, CV_PI / 180, parameters.houghThreshold*1.2);   // 按照1度的分辨率对二值化图像进行霍夫变换，提取线条候选区域 
 
   std::vector<Line> lines;
   for (size_t i = 0; i < tmpLines.size(); ++i)
