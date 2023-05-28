@@ -234,6 +234,85 @@ TennisCourtModel& TennisCourtModel::operator=(const TennisCourtModel& o)
 float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair,
   const cv::Mat& binaryImage, const cv::Mat& rgbImage)
 {
+  {
+    // mannuly select 4 points on the image
+    std::vector<Point2f> image_points;
+
+    image_points.push_back(Point2f(651, 546));    // 0
+    image_points.push_back(Point2f(697, 546));    // 1
+    image_points.push_back(Point2f(1213, 547));    // 3
+    image_points.push_back(Point2f(1259, 548));   // 4
+    image_points.push_back(Point2f(643, 558));    // 5
+    image_points.push_back(Point2f(690, 559));    // 6
+    image_points.push_back(Point2f(1221, 560));    // 8
+    image_points.push_back(Point2f(1268, 560));    // 9
+    image_points.push_back(Point2f(584, 640));    // 10
+    image_points.push_back(Point2f(640, 640));    // 11
+    image_points.push_back(Point2f(956, 639));    // 12
+    image_points.push_back(Point2f(1272, 641));    // 13
+    image_points.push_back(Point2f(1328, 641));    // 14
+    image_points.push_back(Point2f(495, 762));    // 15
+    image_points.push_back(Point2f(565, 763));    // 16
+    image_points.push_back(Point2f(956, 762));    // 17
+    image_points.push_back(Point2f(1348, 764));    // 18
+    image_points.push_back(Point2f(1418, 764));    // 19
+    image_points.push_back(Point2f(353, 957));    // 20
+    image_points.push_back(Point2f(446, 956));    // 21
+    image_points.push_back(Point2f(958, 954));    // 22
+    image_points.push_back(Point2f(1472, 958));    // 23
+    image_points.push_back(Point2f(1565, 959));    // 24
+    image_points.push_back(Point2f(314, 1011));   // 25
+    image_points.push_back(Point2f(414, 1009));    // 26
+    image_points.push_back(Point2f(959, 1006));    // 27
+    image_points.push_back(Point2f(1505, 1011));    // 28
+    image_points.push_back(Point2f(1606, 1013));  // 29
+
+    //
+    std::vector<Point2f> court_points;
+
+    court_points.push_back(courtPoints[0]);    // 0
+    court_points.push_back(courtPoints[1]);   // 1
+    court_points.push_back(courtPoints[3]);   // 3
+    court_points.push_back(courtPoints[4]);  // 4
+    court_points.push_back(courtPoints[5]);   // 5
+    court_points.push_back(courtPoints[6]);  // 6
+    court_points.push_back(courtPoints[8]);   // 8
+    court_points.push_back(courtPoints[9]);  // 9
+    court_points.push_back(courtPoints[10]);   // 10
+    court_points.push_back(courtPoints[11]);  // 11
+    court_points.push_back(courtPoints[12]);   // 12
+    court_points.push_back(courtPoints[13]);  // 13
+    court_points.push_back(courtPoints[14]);   // 14
+    court_points.push_back(courtPoints[15]);  // 15
+    court_points.push_back(courtPoints[16]);    // 16
+    court_points.push_back(courtPoints[17]);    // 17
+    court_points.push_back(courtPoints[18]);    // 18
+    court_points.push_back(courtPoints[19]);    // 19
+    court_points.push_back(courtPoints[20]);    // 20
+    court_points.push_back(courtPoints[21]);    // 21
+    court_points.push_back(courtPoints[22]);    // 22
+    court_points.push_back(courtPoints[23]);    // 23
+    court_points.push_back(courtPoints[24]);    // 24
+    court_points.push_back(courtPoints[25]);   // 25
+    court_points.push_back(courtPoints[26]);    // 26
+    court_points.push_back(courtPoints[27]);    // 27
+    court_points.push_back(courtPoints[28]);    // 28
+    court_points.push_back(courtPoints[29]);  // 29
+
+    Mat H = findHomography(court_points, image_points);
+
+    image_points.resize(30);
+    perspectiveTransform(courtPoints, image_points, H);
+
+    float score = evaluateModel(image_points, binaryImage);
+
+     Mat image = rgbImage.clone();
+     drawModel(image_points, image);
+     displayImage("binaryImage", binaryImage);
+     displayImage("BadmintonCourt", image, 0);
+  }
+
+
   float bestScore = GlobalParameters().initialFitScore;
   std::vector<Point2f> points = getIntersectionPoints(hLinePair, vLinePair);
   //TODO Check whether the intersection points make sense
