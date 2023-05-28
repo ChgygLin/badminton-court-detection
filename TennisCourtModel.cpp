@@ -67,8 +67,16 @@ TennisCourtModel::TennisCourtModel()
   };
 
 
-  hLinePairs = getPossibleLinePairs(hLines);
-  vLinePairs = getPossibleLinePairs(vLines);
+  // hLinePairs = getPossibleLinePairs(hLines);
+  // vLinePairs = getPossibleLinePairs(vLines);
+  hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_doubles));
+  hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_singles));
+  hLinePairs.push_back(std::make_pair(down_long_service_line_for_doubles, down_long_service_line_for_singles));
+
+  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, left_side_line_for_singles));
+  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_singles));
+  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_doubles));
+  vLinePairs.push_back(std::make_pair(right_side_line_for_singles, right_side_line_for_doubles));
 
 
   Point2f point;
@@ -230,6 +238,10 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
   std::vector<Point2f> points = getIntersectionPoints(hLinePair, vLinePair);
   //TODO Check whether the intersection points make sense
 
+  int ox = rgbImage.cols;
+  int oy = rgbImage.rows;
+  Mat M = (Mat_<double>(3, 3) << 1, 0, -ox, 0, 1, -oy, 0, 0, 1);
+
   for (auto& modelHLinePair: hLinePairs)
   {
     for (auto& modelVLinePair: vLinePairs)
@@ -238,15 +250,34 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
       Mat matrix = getPerspectiveTransform(modelPoints, points);    // 4对点计算透视变换矩阵
       std::vector<Point2f> transformedModelPoints(30);    // 整个球场所有的交点数, 透视变换的点在图像外怎么处理?
       perspectiveTransform(courtPoints, transformedModelPoints, matrix);
+
+      #if 0
+        Mat Hbar = M*matrix;
+        double f_square = -(Hbar.at<double>(0, 0)*Hbar.at<double>(0, 1) + Hbar.at<double>(1, 0)*Hbar.at<double>(1,1)) / (Hbar.at<double>(2, 0)*Hbar.at<double>(2, 1));
+
+        if (f_square < 0)
+        {
+          // printf("f_square < 0\n");
+          continue;
+        }
+
+        double beta_square = (Hbar.at<double>(0, 1)*Hbar.at<double>(0, 1) + Hbar.at<double>(1, 1)*Hbar.at<double>(1, 1) + f_square*Hbar.at<double>(2, 1)*Hbar.at<double>(2, 1)) / \
+                          (Hbar.at<double>(0, 0)*Hbar.at<double>(0, 0) + Hbar.at<double>(1, 0)*Hbar.at<double>(1, 0) + f_square*Hbar.at<double>(2, 0)*Hbar.at<double>(2, 0));
+  
+        // printf("beta_square : %f\n", beta_square);
+        if ( (beta_square >= 4) || (beta_square <= 0.25) )
+          continue;
+      #endif
+
       float score = evaluateModel(transformedModelPoints, binaryImage);
       if (score > bestScore)
       {
         bestScore = score;
         transformationMatrix = matrix;
       }
-//      Mat image = rgbImage.clone();
-//      drawModel(transformedModelPoints, image);
-//      displayImage("TennisCourtModel", image, 0);
+    //  Mat image = rgbImage.clone();
+    //  drawModel(transformedModelPoints, image);
+    //  displayImage("TennisCourtModel", image, 1);
     }
   }
   return bestScore;
@@ -363,26 +394,26 @@ float TennisCourtModel::evaluateModel(const std::vector<cv::Point2f>& courtPoint
   float score = 0;
 
   // TODO: heuritic to see whether the model makes sense
-  float d1 = distance(courtPoints[0], courtPoints[1]);
-  float d2 = distance(courtPoints[1], courtPoints[2]);
-  float d3 = distance(courtPoints[2], courtPoints[3]);
-  float d4 = distance(courtPoints[3], courtPoints[0]);
+  float d1 = distance(courtPoints[0], courtPoints[4]);
+  float d2 = distance(courtPoints[4], courtPoints[29]);
+  float d3 = distance(courtPoints[29], courtPoints[25]);
+  float d4 = distance(courtPoints[25], courtPoints[0]);
   float t = 30;
   if (d1 < t || d2 < t || d3 < t || d4 < t)
   {
     return GlobalParameters().initialFitScore;
   }
 
-  score += computeScoreForLineSegment(courtPoints[0], courtPoints[1], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[1], courtPoints[2], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[2], courtPoints[3], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[3], courtPoints[0], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[4], courtPoints[5], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[6], courtPoints[7], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[8], courtPoints[9], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[10], courtPoints[11], binaryImage);
-  score += computeScoreForLineSegment(courtPoints[12], courtPoints[13], binaryImage);
-//  score += computeScoreForLineSegment(courtPoints[14], courtPoints[14], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[0], courtPoints[4], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[5], courtPoints[9], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[10], courtPoints[14], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[15], courtPoints[19], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[20], courtPoints[24], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[25], courtPoints[29], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[0], courtPoints[25], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[1], courtPoints[26], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[3], courtPoints[28], binaryImage);
+  score += computeScoreForLineSegment(courtPoints[4], courtPoints[29], binaryImage);
 
 //  std::cout << "Score = " << score << std::endl;
 

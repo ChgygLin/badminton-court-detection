@@ -143,6 +143,11 @@ void TennisCourtFitter::findBestModelFit(const cv::Mat& binaryImage, const cv::M
       {
         bestScore = score;
         bestModel = model;
+        printf("################################### bestScore: %f ##################################\n", score);
+        std::cout << "Best model score = " << bestScore << std::endl;
+        Mat image = rgbImage.clone();
+        bestModel.drawModel(image);
+        displayImage(windowName, image, 1);
       }
       printf("h: (%d, %ld)    v: (%d, %ld)\n", h, hLinePairs.size(), v, vLinePairs.size());
       v++;
