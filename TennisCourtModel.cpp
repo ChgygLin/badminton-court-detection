@@ -34,6 +34,14 @@ using namespace cv;
 
 TennisCourtModel::TennisCourtModel()
 {
+    std::vector<Point2f> courtPoints = {
+                                        Point2f(0.02, 0.02), Point2f(0.48, 0.02), Point2f(3.05, 0.02), Point2f(5.62, 0.02), Point2f(6.08, 0.02), \
+                                        Point2f(0.02, 0.78), Point2f(0.48, 0.78), Point2f(3.05, 0.78), Point2f(5.62, 0.78), Point2f(6.08, 0.78), \
+                                        Point2f(0.02, 4.7),  Point2f(0.48, 4.7), Point2f(3.05, 4.7), Point2f(5.62, 4.7), Point2f(6.08, 4.7), \
+                                        Point2f(0.02, 8.7),  Point2f(0.48, 8.7), Point2f(3.05, 8.7), Point2f(5.62, 8.7), Point2f(6.08, 8.7), \
+                                        Point2f(0.02, 12.62), Point2f(0.48, 12.62), Point2f(3.05, 12.62), Point2f(5.62, 12.62), Point2f(6.08, 12.62), \
+                                        Point2f(0.02, 13.38), Point2f(0.48, 13.38), Point2f(3.05, 13.38), Point2f(5.62, 13.38), Point2f(6.08, 13.38)
+                                        }
   Point2f hVector(1, 0);    // 单位向量
   const Line up_long_service_line_for_singles = Line(Point2f(0.02, 0.02), hVector);
   const Line up_long_service_line_for_doubles = Line(Point2f(0.02, 0.78), hVector);
