@@ -34,14 +34,6 @@ using namespace cv;
 
 TennisCourtModel::TennisCourtModel()
 {
-    std::vector<Point2f> courtPoints = {
-                                        Point2f(0.02, 0.02), Point2f(0.48, 0.02), Point2f(3.05, 0.02), Point2f(5.62, 0.02), Point2f(6.08, 0.02), \
-                                        Point2f(0.02, 0.78), Point2f(0.48, 0.78), Point2f(3.05, 0.78), Point2f(5.62, 0.78), Point2f(6.08, 0.78), \
-                                        Point2f(0.02, 4.7),  Point2f(0.48, 4.7), Point2f(3.05, 4.7), Point2f(5.62, 4.7), Point2f(6.08, 4.7), \
-                                        Point2f(0.02, 8.7),  Point2f(0.48, 8.7), Point2f(3.05, 8.7), Point2f(5.62, 8.7), Point2f(6.08, 8.7), \
-                                        Point2f(0.02, 12.62), Point2f(0.48, 12.62), Point2f(3.05, 12.62), Point2f(5.62, 12.62), Point2f(6.08, 12.62), \
-                                        Point2f(0.02, 13.38), Point2f(0.48, 13.38), Point2f(3.05, 13.38), Point2f(5.62, 13.38), Point2f(6.08, 13.38)
-                                        }
   Point2f hVector(1, 0);    // 单位向量
   const Line up_long_service_line_for_singles = Line(Point2f(0.02, 0.02), hVector);
   const Line up_long_service_line_for_doubles = Line(Point2f(0.02, 0.78), hVector);
@@ -220,6 +212,7 @@ TennisCourtModel::TennisCourtModel()
   }
 
 
+  std::cout << "courtPoints.size() " << courtPoints.size() << std::endl;
   assert(courtPoints.size() == 30);
 }
 
@@ -242,83 +235,83 @@ TennisCourtModel& TennisCourtModel::operator=(const TennisCourtModel& o)
 float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair,
   const cv::Mat& binaryImage, const cv::Mat& rgbImage)
 {
-  {
-    // mannuly select 4 points on the image
-    std::vector<Point2f> image_points;
+  // {
+  //   // mannuly select 4 points on the image
+  //   std::vector<Point2f> image_points;
 
-    image_points.push_back(Point2f(651, 546));    // 0
-    image_points.push_back(Point2f(697, 546));    // 1
-    image_points.push_back(Point2f(1213, 547));    // 3
-    image_points.push_back(Point2f(1259, 548));   // 4
-    image_points.push_back(Point2f(643, 558));    // 5
-    image_points.push_back(Point2f(690, 559));    // 6
-    image_points.push_back(Point2f(1221, 560));    // 8
-    image_points.push_back(Point2f(1268, 560));    // 9
-    image_points.push_back(Point2f(584, 640));    // 10
-    image_points.push_back(Point2f(640, 640));    // 11
-    image_points.push_back(Point2f(956, 639));    // 12
-    image_points.push_back(Point2f(1272, 641));    // 13
-    image_points.push_back(Point2f(1328, 641));    // 14
-    image_points.push_back(Point2f(495, 762));    // 15
-    image_points.push_back(Point2f(565, 763));    // 16
-    image_points.push_back(Point2f(956, 762));    // 17
-    image_points.push_back(Point2f(1348, 764));    // 18
-    image_points.push_back(Point2f(1418, 764));    // 19
-    image_points.push_back(Point2f(353, 957));    // 20
-    image_points.push_back(Point2f(446, 956));    // 21
-    image_points.push_back(Point2f(958, 954));    // 22
-    image_points.push_back(Point2f(1472, 958));    // 23
-    image_points.push_back(Point2f(1565, 959));    // 24
-    image_points.push_back(Point2f(314, 1011));   // 25
-    image_points.push_back(Point2f(414, 1009));    // 26
-    image_points.push_back(Point2f(959, 1006));    // 27
-    image_points.push_back(Point2f(1505, 1011));    // 28
-    image_points.push_back(Point2f(1606, 1013));  // 29
+  //   image_points.push_back(Point2f(651, 546));    // 0
+  //   image_points.push_back(Point2f(697, 546));    // 1
+  //   image_points.push_back(Point2f(1213, 547));    // 3
+  //   image_points.push_back(Point2f(1259, 548));   // 4
+  //   image_points.push_back(Point2f(643, 558));    // 5
+  //   image_points.push_back(Point2f(690, 559));    // 6
+  //   image_points.push_back(Point2f(1221, 560));    // 8
+  //   image_points.push_back(Point2f(1268, 560));    // 9
+  //   image_points.push_back(Point2f(584, 640));    // 10
+  //   image_points.push_back(Point2f(640, 640));    // 11
+  //   image_points.push_back(Point2f(956, 639));    // 12
+  //   image_points.push_back(Point2f(1272, 641));    // 13
+  //   image_points.push_back(Point2f(1328, 641));    // 14
+  //   image_points.push_back(Point2f(495, 762));    // 15
+  //   image_points.push_back(Point2f(565, 763));    // 16
+  //   image_points.push_back(Point2f(956, 762));    // 17
+  //   image_points.push_back(Point2f(1348, 764));    // 18
+  //   image_points.push_back(Point2f(1418, 764));    // 19
+  //   image_points.push_back(Point2f(353, 957));    // 20
+  //   image_points.push_back(Point2f(446, 956));    // 21
+  //   image_points.push_back(Point2f(958, 954));    // 22
+  //   image_points.push_back(Point2f(1472, 958));    // 23
+  //   image_points.push_back(Point2f(1565, 959));    // 24
+  //   image_points.push_back(Point2f(314, 1011));   // 25
+  //   image_points.push_back(Point2f(414, 1009));    // 26
+  //   image_points.push_back(Point2f(959, 1006));    // 27
+  //   image_points.push_back(Point2f(1505, 1011));    // 28
+  //   image_points.push_back(Point2f(1606, 1013));  // 29
 
-    //
-    std::vector<Point2f> court_points;
+  //   //
+  //   std::vector<Point2f> court_points;
 
-    court_points.push_back(courtPoints[0]);    // 0
-    court_points.push_back(courtPoints[1]);   // 1
-    court_points.push_back(courtPoints[3]);   // 3
-    court_points.push_back(courtPoints[4]);  // 4
-    court_points.push_back(courtPoints[5]);   // 5
-    court_points.push_back(courtPoints[6]);  // 6
-    court_points.push_back(courtPoints[8]);   // 8
-    court_points.push_back(courtPoints[9]);  // 9
-    court_points.push_back(courtPoints[10]);   // 10
-    court_points.push_back(courtPoints[11]);  // 11
-    court_points.push_back(courtPoints[12]);   // 12
-    court_points.push_back(courtPoints[13]);  // 13
-    court_points.push_back(courtPoints[14]);   // 14
-    court_points.push_back(courtPoints[15]);  // 15
-    court_points.push_back(courtPoints[16]);    // 16
-    court_points.push_back(courtPoints[17]);    // 17
-    court_points.push_back(courtPoints[18]);    // 18
-    court_points.push_back(courtPoints[19]);    // 19
-    court_points.push_back(courtPoints[20]);    // 20
-    court_points.push_back(courtPoints[21]);    // 21
-    court_points.push_back(courtPoints[22]);    // 22
-    court_points.push_back(courtPoints[23]);    // 23
-    court_points.push_back(courtPoints[24]);    // 24
-    court_points.push_back(courtPoints[25]);   // 25
-    court_points.push_back(courtPoints[26]);    // 26
-    court_points.push_back(courtPoints[27]);    // 27
-    court_points.push_back(courtPoints[28]);    // 28
-    court_points.push_back(courtPoints[29]);  // 29
+  //   court_points.push_back(courtPoints[0]);    // 0
+  //   court_points.push_back(courtPoints[1]);   // 1
+  //   court_points.push_back(courtPoints[3]);   // 3
+  //   court_points.push_back(courtPoints[4]);  // 4
+  //   court_points.push_back(courtPoints[5]);   // 5
+  //   court_points.push_back(courtPoints[6]);  // 6
+  //   court_points.push_back(courtPoints[8]);   // 8
+  //   court_points.push_back(courtPoints[9]);  // 9
+  //   court_points.push_back(courtPoints[10]);   // 10
+  //   court_points.push_back(courtPoints[11]);  // 11
+  //   court_points.push_back(courtPoints[12]);   // 12
+  //   court_points.push_back(courtPoints[13]);  // 13
+  //   court_points.push_back(courtPoints[14]);   // 14
+  //   court_points.push_back(courtPoints[15]);  // 15
+  //   court_points.push_back(courtPoints[16]);    // 16
+  //   court_points.push_back(courtPoints[17]);    // 17
+  //   court_points.push_back(courtPoints[18]);    // 18
+  //   court_points.push_back(courtPoints[19]);    // 19
+  //   court_points.push_back(courtPoints[20]);    // 20
+  //   court_points.push_back(courtPoints[21]);    // 21
+  //   court_points.push_back(courtPoints[22]);    // 22
+  //   court_points.push_back(courtPoints[23]);    // 23
+  //   court_points.push_back(courtPoints[24]);    // 24
+  //   court_points.push_back(courtPoints[25]);   // 25
+  //   court_points.push_back(courtPoints[26]);    // 26
+  //   court_points.push_back(courtPoints[27]);    // 27
+  //   court_points.push_back(courtPoints[28]);    // 28
+  //   court_points.push_back(courtPoints[29]);  // 29
 
-    Mat H = findHomography(court_points, image_points);
+  //   Mat H = findHomography(court_points, image_points);
 
-    image_points.resize(30);
-    perspectiveTransform(courtPoints, image_points, H);
+  //   image_points.resize(30);
+  //   perspectiveTransform(courtPoints, image_points, H);
 
-    float score = evaluateModel(image_points, binaryImage);
+  //   float score = evaluateModel(image_points, binaryImage);
 
-     Mat image = rgbImage.clone();
-     drawModel(image_points, image);
-     displayImage("binaryImage", binaryImage);
-     displayImage("BadmintonCourt", image, 0);
-  }
+  //    Mat image = rgbImage.clone();
+  //    drawModel(image_points, image);
+  //    displayImage("binaryImage", binaryImage);
+  //    displayImage("BadmintonCourt", image, 0);
+  // }
 
 
   float bestScore = GlobalParameters().initialFitScore;
@@ -431,19 +424,55 @@ void TennisCourtModel::show()
   dx = cw - ratio * center_p.x;
   dy = ch - ratio * center_p.y;
 
+  std::vector<Point2f> court = {
+                                  Point2f(0.02, 13.38), Point2f(0.48, 13.38), Point2f(3.05, 13.38), Point2f(5.62, 13.38), Point2f(6.08, 13.38), \
+                                  Point2f(0.02, 12.62), Point2f(0.48, 12.62), Point2f(3.05, 12.62), Point2f(5.62, 12.62), Point2f(6.08, 12.62), \
+                                  Point2f(0.02, 8.7),  Point2f(0.48, 8.7), Point2f(3.05, 8.7), Point2f(5.62, 8.7), Point2f(6.08, 8.7), \
+                                  Point2f(0.02, 4.7),  Point2f(0.48, 4.7), Point2f(3.05, 4.7), Point2f(5.62, 4.7), Point2f(6.08, 4.7), \
+                                  Point2f(0.02, 0.78), Point2f(0.48, 0.78), Point2f(3.05, 0.78), Point2f(5.62, 0.78), Point2f(6.08, 0.78), \
+                                  Point2f(0.02, 0.02), Point2f(0.48, 0.02), Point2f(3.05, 0.02), Point2f(5.62, 0.02), Point2f(6.08, 0.02)
+                                };
+
+                                 // 网线  (0.02, 6.7)   (6.08, 6.7)   柱子30度角倾斜: x坐标 - ( 1.55*sin(30) = 0.775 ),   y坐标 - ( 1.55*cos(30) = 1.342 )
+                                 // (-0.773, 5.358)   (5.305, 5.358)
+
   std::vector<Point2f> transformedModelPoints(30);
   char text[10];
   for (int i=0; i<30; i++)
   {
-    transformedModelPoints[i].x = ratio * courtPoints[i].x + dx;
-    transformedModelPoints[i].y = ratio * courtPoints[i].y + dy;
+    transformedModelPoints[i].x = ratio * court[i].x + dx;
+    transformedModelPoints[i].y = ratio * court[i].y + dy;
 
-    sprintf(text, "%d", i);
+    sprintf(text, "%d", i+1);
     circle(image, Point(transformedModelPoints[i].x, transformedModelPoints[i].y), 8, Scalar(0, 0, 255), -1);
     putText(image, text, Point(transformedModelPoints[i].x-20, transformedModelPoints[i].y-10), FONT_HERSHEY_COMPLEX, 1.0, Scalar(0, 0, 255), 2);
   }
 
   drawModel(transformedModelPoints, image, (0, 0, 0));
+
+  // 网带
+  std::vector<Point2f> net = { Point2f(0.02, 6.7), Point2f(6.08, 6.7), Point2f(-0.773, 5.358), Point2f(5.305, 5.358) };
+  for (int i=0; i<4; i++)
+  {
+    net[i].x = ratio * net[i].x + dx;
+    net[i].y = ratio * net[i].y + dy;
+  }
+
+  drawLine(net[0], net[2], image, (0, 255, 255)); // 左柱
+  drawLine(net[1], net[3], image, (0, 255, 255)); // 右柱
+  drawLine(net[2], net[3], image, (0, 255, 255)); // 网
+
+  // 左
+  sprintf(text, "%d", 31);
+  circle(image, Point(net[2].x, net[2].y), 8, Scalar(0, 0, 255), -1);
+  putText(image, text, Point(net[2].x-20, net[2].y-10), FONT_HERSHEY_COMPLEX, 1.0, Scalar(0, 0, 255), 2);
+
+  // 右
+  sprintf(text, "%d", 32);
+  circle(image, Point(net[3].x, net[3].y), 8, Scalar(0, 0, 255), -1);
+  putText(image, text, Point(net[3].x-20, net[3].y-10), FONT_HERSHEY_COMPLEX, 1.0, Scalar(0, 0, 255), 2);
+
+
   displayImage("TennisCourtModel", image);
 }
 

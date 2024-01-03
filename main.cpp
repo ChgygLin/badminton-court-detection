@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   CourtLineCandidateDetector courtLineCandidateDetector;
   TennisCourtFitter tennisCourtFitter;
 
-  // debug
+  // 标准球场
   // TennisCourtModel model;
   // model.show();
   // return 0;
