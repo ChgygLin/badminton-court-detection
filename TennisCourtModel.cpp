@@ -473,6 +473,7 @@ void TennisCourtModel::show()
   putText(image, text, Point(net[3].x-20, net[3].y-10), FONT_HERSHEY_COMPLEX, 1.0, Scalar(0, 0, 255), 2);
 
 
+  imwrite("../court.png", image);
   displayImage("TennisCourtModel", image);
 }
 
