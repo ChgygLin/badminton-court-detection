@@ -82,7 +82,7 @@ void TennisCourtFitter::getHorizontalAndVerticalLines(const std::vector<Line>& l
     }
   }
 
-  if (debug)
+  if (true)
   {
     std::cout << "Horizontal lines = " << hLines.size() << std::endl;
     std::cout << "Vertical lines = " << vLines.size() << std::endl;
@@ -133,6 +133,8 @@ void TennisCourtFitter::findBestModelFit(const cv::Mat& binaryImage, const cv::M
   int h, v;
   h=v=0;
   float bestScore = GlobalParameters().initialFitScore;
+  printf("hsize: %d\n", hLinePairs.size());
+  printf("vsize: %d\n", vLinePairs.size());
   for (auto& hLinePair: hLinePairs)
   {
     for (auto& vLinePair: vLinePairs)

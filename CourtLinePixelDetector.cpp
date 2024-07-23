@@ -34,24 +34,129 @@ CourtLinePixelDetector::CourtLinePixelDetector(CourtLinePixelDetector::Parameter
 
 }
 
+using namespace std;
+void ZhangSuen_Thin(cv::Mat& src, cv::Mat& dst)
+{
+    if (src.type() != CV_8UC1) {
+        cout << "只处理二值化图像，请先二值化图像" << endl;
+        return;
+    }
+
+    src.copyTo(dst);
+    int width = src.cols;
+    int height = src.rows;
+    int step = dst.step;
+    bool ifEnd;
+    int p1, p2, p3, p4, p5, p6, p7, p8; //八邻域
+    vector<uchar*> flag; //用于标记待删除的点
+    uchar* img = dst.data;
+
+    while (true) {
+        ifEnd = false;
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                uchar* p = img + i * step + j;
+                if (*p == 0) continue; //如果不是前景点,跳过
+                //判断八邻域像素点的值(要考虑边界的情况),若为前景点(白色255),则为1;反之为0
+                p1 = p[(i == 0) ? 0 : -step] > 0 ? 1 : 0;
+                p2 = p[(i == 0 || j == width - 1) ? 0 : -step + 1] > 0 ? 1 : 0;
+                p3 = p[(j == width - 1) ? 0 : 1] > 0 ? 1 : 0;
+                p4 = p[(i == height - 1 || j == width - 1) ? 0 : step + 1] > 0 ? 1 : 0;
+                p5 = p[(i == height - 1) ? 0 : step] > 0 ? 1 : 0;
+                p6 = p[(i == height - 1 || j == 0) ? 0 : step - 1] > 0 ? 1 : 0;
+                p7 = p[(j == 0) ? 0 : -1] > 0 ? 1 : 0;
+                p8 = p[(i == 0 || j == 0) ? 0 : -step - 1] > 0 ? 1 : 0;
+                if ((p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8) >= 2 && (p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8) <= 6) //条件1
+                {
+                    //条件2的计数
+                    int count = 0;
+                    if (p1 == 0 && p2 == 1) ++count;
+                    if (p2 == 0 && p3 == 1) ++count;
+                    if (p3 == 0 && p4 == 1) ++count;
+                    if (p4 == 0 && p5 == 1) ++count;
+                    if (p5 == 0 && p6 == 1) ++count;
+                    if (p6 == 0 && p7 == 1) ++count;
+                    if (p7 == 0 && p8 == 1) ++count;
+                    if (p8 == 0 && p1 == 1) ++count;
+                    if (count == 1 && p1 * p3 * p5 == 0 && p3 * p5 * p7 == 0) { //条件2、3、4
+                        flag.push_back(p); //将当前像素添加到待删除数组中
+                    }
+                }
+            }
+        }
+        //将标记的点删除
+        for (vector<uchar*>::iterator i = flag.begin(); i != flag.end(); ++i) {
+            **i = 0;
+            ifEnd = true;
+        }
+        flag.clear(); //清空待删除数组
+
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                uchar* p = img + i * step + j;
+                if (*p == 0) continue;
+                p1 = p[(i == 0) ? 0 : -step] > 0 ? 1 : 0;
+                p2 = p[(i == 0 || j == width - 1) ? 0 : -step + 1] > 0 ? 1 : 0;
+                p3 = p[(j == width - 1) ? 0 : 1] > 0 ? 1 : 0;
+                p4 = p[(i == height - 1 || j == width - 1) ? 0 : step + 1] > 0 ? 1 : 0;
+                p5 = p[(i == height - 1) ? 0 : step] > 0 ? 1 : 0;
+                p6 = p[(i == height - 1 || j == 0) ? 0 : step - 1] > 0 ? 1 : 0;
+                p7 = p[(j == 0) ? 0 : -1] > 0 ? 1 : 0;
+                p8 = p[(i == 0 || j == 0) ? 0 : -step - 1] > 0 ? 1 : 0;
+                if ((p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8) >= 2 && (p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8) <= 6)
+                {
+                    int count = 0;
+                    if (p1 == 0 && p2 == 1) ++count;
+                    if (p2 == 0 && p3 == 1) ++count;
+                    if (p3 == 0 && p4 == 1) ++count;
+                    if (p4 == 0 && p5 == 1) ++count;
+                    if (p5 == 0 && p6 == 1) ++count;
+                    if (p6 == 0 && p7 == 1) ++count;
+                    if (p7 == 0 && p8 == 1) ++count;
+                    if (p8 == 0 && p1 == 1) ++count;
+                    if (count == 1 && p1 * p3 * p7 == 0 && p1 * p5 * p7 == 0) {
+                        flag.push_back(p);
+                    }
+                }
+            }
+        }
+        //将标记的点删除
+        for (vector<uchar*>::iterator i = flag.begin(); i != flag.end(); ++i) {
+            **i = 0;
+            ifEnd = true;
+        }
+        flag.clear();
+
+        if (!ifEnd) break; //若没有可以删除的像素点，则退出循环
+    }
+}
+
 Mat CourtLinePixelDetector::run(const Mat& frame)
 {
   TimeMeasurement::start("CourtLinePixelDetector::run");
 
+  printf("\t getLuminanceChannel \n");
   TimeMeasurement::start("\tgetLuminanceChannel");
   Mat luminanceImage = getLuminanceChannel(frame);
   TimeMeasurement::stop("\tgetLuminanceChannel");
 
+  printf("\t detectLinePixels \n");
   TimeMeasurement::start("\tdetectLinePixels");
   Mat image = detectLinePixels(luminanceImage);
   TimeMeasurement::stop("\tdetectLinePixels");
 
+  printf("\t filterLinePixels \n");
   TimeMeasurement::start("\tfilterLinePixels");
   image = filterLinePixels(image, luminanceImage);
   TimeMeasurement::stop("\tfilterLinePixels");
 
+  cv::Mat dst;
+  ZhangSuen_Thin(image, dst);
+  // cv::imshow("test", dst);
+  // cv::waitKey(0);
+
   TimeMeasurement::stop("CourtLinePixelDetector::run");
-  return image;
+  return dst;
 }
 
 /*  

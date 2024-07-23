@@ -322,6 +322,9 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
   int oy = rgbImage.rows;
   Mat M = (Mat_<double>(3, 3) << 1, 0, -ox, 0, 1, -oy, 0, 0, 1);
 
+  printf("model hsize: %d\n", hLinePairs.size());
+  printf("model vsize: %d\n", vLinePairs.size());
+
   for (auto& modelHLinePair: hLinePairs)
   {
     for (auto& modelVLinePair: vLinePairs)
