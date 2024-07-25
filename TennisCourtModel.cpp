@@ -67,17 +67,20 @@ TennisCourtModel::TennisCourtModel()
   };
 
 
-  hLinePairs = getPossibleLinePairs(hLines);
-  vLinePairs = getPossibleLinePairs(vLines);
+  // hLinePairs = getPossibleLinePairs(hLines);
+  // vLinePairs = getPossibleLinePairs(vLines);
 
-  // hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_doubles));
-  // hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_singles));
-  // hLinePairs.push_back(std::make_pair(down_long_service_line_for_doubles, down_long_service_line_for_singles));
+  hLinePairs.push_back(std::make_pair(hline3, hline1));
+  hLinePairs.push_back(std::make_pair(hline3, hline2));
 
-  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, left_side_line_for_singles));
-  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_singles));
-  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_doubles));
-  // vLinePairs.push_back(std::make_pair(right_side_line_for_singles, right_side_line_for_doubles));
+  hLinePairs.push_back(std::make_pair(hline4, hline3));
+  hLinePairs.push_back(std::make_pair(hline4, hline2));
+  hLinePairs.push_back(std::make_pair(hline4, hline1));
+
+  vLinePairs.push_back(std::make_pair(vline1, vline4));
+  vLinePairs.push_back(std::make_pair(vline1, vline5));
+  vLinePairs.push_back(std::make_pair(vline2, vline4));
+  vLinePairs.push_back(std::make_pair(vline2, vline5));
 
 
   courtPoints.assign( {Point2f(0.02, 0.02),   Point2f(0.48, 0.02),   Point2f(3.05, 0.02),   Point2f(5.62, 0.02),   Point2f(6.08, 0.02),
