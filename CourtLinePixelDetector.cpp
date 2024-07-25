@@ -152,8 +152,8 @@ Mat CourtLinePixelDetector::run(const Mat& frame)
 
   cv::Mat dst;
   ZhangSuen_Thin(image, dst);
-  // cv::imshow("test", dst);
-  // cv::waitKey(0);
+  cv::imshow("test", dst);
+  cv::waitKey(0);
 
   TimeMeasurement::stop("CourtLinePixelDetector::run");
   return dst;

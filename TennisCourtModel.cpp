@@ -69,6 +69,7 @@ TennisCourtModel::TennisCourtModel()
 
   // hLinePairs = getPossibleLinePairs(hLines);
   // vLinePairs = getPossibleLinePairs(vLines);
+
   hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_doubles));
   hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_singles));
   hLinePairs.push_back(std::make_pair(down_long_service_line_for_doubles, down_long_service_line_for_singles));
@@ -212,7 +213,7 @@ TennisCourtModel::TennisCourtModel()
   }
 
 
-  std::cout << "courtPoints.size() " << courtPoints.size() << std::endl;
+  // std::cout << "courtPoints.size() " << courtPoints.size() << std::endl;
   assert(courtPoints.size() == 30);
 }
 
@@ -322,8 +323,8 @@ float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair
   int oy = rgbImage.rows;
   Mat M = (Mat_<double>(3, 3) << 1, 0, -ox, 0, 1, -oy, 0, 0, 1);
 
-  printf("model hsize: %d\n", hLinePairs.size());
-  printf("model vsize: %d\n", vLinePairs.size());
+  // printf("model hsize: %d\n", hLinePairs.size());
+  // printf("model vsize: %d\n", vLinePairs.size());
 
   for (auto& modelHLinePair: hLinePairs)
   {

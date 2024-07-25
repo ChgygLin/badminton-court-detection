@@ -27,22 +27,27 @@ int main(int argc, char** argv)
   std::string filename(argv[1]);
 
   std::cout << "Reading file " << filename << std::endl;
-  VideoCapture vc(filename);
-  if (!vc.isOpened())
-  {
-    std::cerr << "Cannot open file " << filename << std::endl;
-    return 1;
-  }
-  printVideoInfo(vc);
-  Mat frame;
-  int frameIndex = int(vc.get(CAP_PROP_FRAME_COUNT)) / 2;
-  vc.set(CAP_PROP_POS_FRAMES, frameIndex);
-  if (!vc.read(frame))
-  {
-    std::cerr << "Failed to read frame with index " << frameIndex << std::endl;
-    return 2;
-  }
-  std::cout << "Reading frame with index " << frameIndex << std::endl;
+
+  #if 0
+    VideoCapture vc(filename);
+    if (!vc.isOpened())
+    {
+      std::cerr << "Cannot open file " << filename << std::endl;
+      return 1;
+    }
+    printVideoInfo(vc);
+    Mat frame;
+    int frameIndex = int(vc.get(CAP_PROP_FRAME_COUNT)) / 2;
+    vc.set(CAP_PROP_POS_FRAMES, frameIndex);
+    if (!vc.read(frame))
+    {
+      std::cerr << "Failed to read frame with index " << frameIndex << std::endl;
+      return 2;
+    }
+    std::cout << "Reading frame with index " << frameIndex << std::endl;
+  #else
+    Mat frame = imread(filename);
+  #endif
 
   CourtLinePixelDetector courtLinePixelDetector;
   CourtLineCandidateDetector courtLineCandidateDetector;
