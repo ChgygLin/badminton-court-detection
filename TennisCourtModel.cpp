@@ -11,207 +11,82 @@
 
 using namespace cv;
 
-/**
- * 横向坐标             0,0.04  0.46,0.5  3.03,3.07  5.6,5.64  6.06,6.1           
- *                      0.02    0.48      3.05        5.62        6.08
- * 纵向坐标  
- * --------------------------------------------------------------------------
- * 0,0.04       0.02
- * --------------------------------------------------------------------------
- * 0.76,0.8     0.78
- * --------------------------------------------------------------------------
- * 4.68,4.72    4.7
- *
- *                             center: (3.05, 6.7)
- * 
- * --------------------------------------------------------------------------
- * 8.68,8.72    8.7     
- * --------------------------------------------------------------------------
- * 12.6,12.64   12.62  
- * --------------------------------------------------------------------------                                                            
- * 13.36,13.4   13.38   
+/**                           vline1  vline2    vline3    vline4    vline5
+        * 横向坐标             0,0.04  0.46,0.5  3.03,3.07  5.6,5.64  6.06,6.1           
+        *                      0.02    0.48      3.05        5.62        6.08
+        * 纵向坐标  
+        * --------------------------------------------------------------------------
+hline1  * 0,0.04       0.02                                                            
+        * --------------------------------------------------------------------------
+hline2  * 0.76,0.8     0.78                        
+        * --------------------------------------------------------------------------
+hline3  * 4.68,4.72    4.7                         
+        *
+        *                             center: (3.05, 6.7)
+        * 
+        * --------------------------------------------------------------------------
+hline4  * 8.68,8.72    8.7                         
+        * --------------------------------------------------------------------------
+hline5  * 12.6,12.64   12.62                       
+        * --------------------------------------------------------------------------
+hline6  * 13.36,13.4   13.38
 */
 
 TennisCourtModel::TennisCourtModel()
 {
   Point2f hVector(1, 0);    // 单位向量
-  const Line up_long_service_line_for_singles = Line(Point2f(0.02, 0.02), hVector);
-  const Line up_long_service_line_for_doubles = Line(Point2f(0.02, 0.78), hVector);
-  const Line up_short_service_line = Line(Point2f(0.02, 4.7), hVector);
-  const Line down_short_service_line = Line(Point2f(0.02, 8.7), hVector);
-  const Line down_long_service_line_for_doubles = Line(Point2f(0.02, 12.62), hVector);
-  const Line down_long_service_line_for_singles = Line(Point2f(0.02, 13.38), hVector);
+  const Line hline1 = Line(Point2f(0.02, 0.02), hVector);
+  const Line hline2 = Line(Point2f(0.02, 0.78), hVector);
+  const Line hline3 = Line(Point2f(0.02, 4.7), hVector);
+  const Line hline4 = Line(Point2f(0.02, 8.7), hVector);
+  const Line hline5 = Line(Point2f(0.02, 12.62), hVector);
+  const Line hline6 = Line(Point2f(0.02, 13.38), hVector);
 
   hLines = {
-    up_long_service_line_for_singles, \
-    up_long_service_line_for_doubles, \
-    up_short_service_line, \
-    down_short_service_line, \
-    down_long_service_line_for_doubles, \
-    down_long_service_line_for_singles
+    hline1, \
+    hline2, \
+    hline3, \
+    hline4, \
+    hline5, \
+    hline6
   };
 
   Point2f vVector(0, 1);    // 单位向量
-  const Line left_side_line_for_doubles = Line(Point2f(0.02, 0.02), vVector);
-  const Line left_side_line_for_singles = Line(Point2f(0.48, 0.02), vVector);
-  const Line centre_line = Line(Point2f(3.05, 0.02), vVector);
-  const Line right_side_line_for_singles = Line(Point2f(5.62, 0.02), vVector);
-  const Line right_side_line_for_doubles = Line(Point2f(6.08, 0.02), vVector);
+  const Line vline1 = Line(Point2f(0.02, 0.02), vVector);
+  const Line vline2 = Line(Point2f(0.48, 0.02), vVector);
+  const Line vline3 = Line(Point2f(3.05, 0.02), vVector);
+  const Line vline4 = Line(Point2f(5.62, 0.02), vVector);
+  const Line vline5 = Line(Point2f(6.08, 0.02), vVector);
 
   vLines = {
-    left_side_line_for_doubles, \
-    left_side_line_for_singles, \
-    centre_line, \
-    right_side_line_for_singles, \
-    right_side_line_for_doubles
+    vline1, \
+    vline2, \
+    vline3, \
+    vline4, \
+    vline5
   };
 
 
-  // hLinePairs = getPossibleLinePairs(hLines);
-  // vLinePairs = getPossibleLinePairs(vLines);
+  hLinePairs = getPossibleLinePairs(hLines);
+  vLinePairs = getPossibleLinePairs(vLines);
 
-  hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_doubles));
-  hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_singles));
-  hLinePairs.push_back(std::make_pair(down_long_service_line_for_doubles, down_long_service_line_for_singles));
+  // hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_doubles));
+  // hLinePairs.push_back(std::make_pair(down_short_service_line, down_long_service_line_for_singles));
+  // hLinePairs.push_back(std::make_pair(down_long_service_line_for_doubles, down_long_service_line_for_singles));
 
-  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, left_side_line_for_singles));
-  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_singles));
-  vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_doubles));
-  vLinePairs.push_back(std::make_pair(right_side_line_for_singles, right_side_line_for_doubles));
-
-
-  Point2f point;
-  if (up_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (up_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (up_long_service_line_for_singles.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (up_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (up_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
+  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, left_side_line_for_singles));
+  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_singles));
+  // vLinePairs.push_back(std::make_pair(left_side_line_for_doubles, right_side_line_for_doubles));
+  // vLinePairs.push_back(std::make_pair(right_side_line_for_singles, right_side_line_for_doubles));
 
 
-  if (up_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (up_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (up_long_service_line_for_doubles.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (up_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (up_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
-
-
-  if (up_short_service_line.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (up_short_service_line.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (up_short_service_line.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (up_short_service_line.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (up_short_service_line.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
-
-
-  if (down_short_service_line.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (down_short_service_line.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (down_short_service_line.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (down_short_service_line.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (down_short_service_line.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
-
-
-  if (down_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (down_long_service_line_for_doubles.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (down_long_service_line_for_doubles.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (down_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (down_long_service_line_for_doubles.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
-
-
-  if (down_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point); // P1
-  }
-  if (down_long_service_line_for_singles.computeIntersectionPoint(left_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point); // P2
-  }
-  if (down_long_service_line_for_singles.computeIntersectionPoint(centre_line, point))
-  {
-    courtPoints.push_back(point); // P3
-  }
-  if (down_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_singles, point))
-  {
-    courtPoints.push_back(point);  // P4
-  }
-  if (down_long_service_line_for_singles.computeIntersectionPoint(right_side_line_for_doubles, point))
-  {
-    courtPoints.push_back(point);  // P5
-  }
-
+  courtPoints.assign( {Point2f(0.02, 0.02),   Point2f(0.48, 0.02),   Point2f(3.05, 0.02),   Point2f(5.62, 0.02),   Point2f(6.08, 0.02),
+                        Point2f(0.02, 0.78),   Point2f(0.48, 0.78),   Point2f(3.05, 0.78),   Point2f(5.62, 0.78),   Point2f(6.08, 0.78),
+                        Point2f(0.02, 4.7),    Point2f(0.48, 4.7),    Point2f(3.05, 4.7),    Point2f(5.62, 4.7),    Point2f(6.08, 4.7),
+                        Point2f(0.02, 8.7),    Point2f(0.48, 8.7),    Point2f(3.05, 8.7),    Point2f(5.62, 8.7),    Point2f(6.08, 8.7),
+                        Point2f(0.02, 12.62),  Point2f(0.48, 12.62),  Point2f(3.05, 12.62),  Point2f(5.62, 12.62),  Point2f(6.08, 12.62),
+                        Point2f(0.02, 13.38),  Point2f(0.48, 13.38),  Point2f(3.05, 13.38),  Point2f(5.62, 13.38),  Point2f(6.08, 13.38) });
+                        //Point2f(0, 6.7, 1.55), Point2f(6.1, 6.7, 1.55))
 
   // std::cout << "courtPoints.size() " << courtPoints.size() << std::endl;
   assert(courtPoints.size() == 30);
@@ -236,85 +111,6 @@ TennisCourtModel& TennisCourtModel::operator=(const TennisCourtModel& o)
 float TennisCourtModel::fit(const LinePair& hLinePair, const LinePair& vLinePair,
   const cv::Mat& binaryImage, const cv::Mat& rgbImage)
 {
-  // {
-  //   // mannuly select 4 points on the image
-  //   std::vector<Point2f> image_points;
-
-  //   image_points.push_back(Point2f(651, 546));    // 0
-  //   image_points.push_back(Point2f(697, 546));    // 1
-  //   image_points.push_back(Point2f(1213, 547));    // 3
-  //   image_points.push_back(Point2f(1259, 548));   // 4
-  //   image_points.push_back(Point2f(643, 558));    // 5
-  //   image_points.push_back(Point2f(690, 559));    // 6
-  //   image_points.push_back(Point2f(1221, 560));    // 8
-  //   image_points.push_back(Point2f(1268, 560));    // 9
-  //   image_points.push_back(Point2f(584, 640));    // 10
-  //   image_points.push_back(Point2f(640, 640));    // 11
-  //   image_points.push_back(Point2f(956, 639));    // 12
-  //   image_points.push_back(Point2f(1272, 641));    // 13
-  //   image_points.push_back(Point2f(1328, 641));    // 14
-  //   image_points.push_back(Point2f(495, 762));    // 15
-  //   image_points.push_back(Point2f(565, 763));    // 16
-  //   image_points.push_back(Point2f(956, 762));    // 17
-  //   image_points.push_back(Point2f(1348, 764));    // 18
-  //   image_points.push_back(Point2f(1418, 764));    // 19
-  //   image_points.push_back(Point2f(353, 957));    // 20
-  //   image_points.push_back(Point2f(446, 956));    // 21
-  //   image_points.push_back(Point2f(958, 954));    // 22
-  //   image_points.push_back(Point2f(1472, 958));    // 23
-  //   image_points.push_back(Point2f(1565, 959));    // 24
-  //   image_points.push_back(Point2f(314, 1011));   // 25
-  //   image_points.push_back(Point2f(414, 1009));    // 26
-  //   image_points.push_back(Point2f(959, 1006));    // 27
-  //   image_points.push_back(Point2f(1505, 1011));    // 28
-  //   image_points.push_back(Point2f(1606, 1013));  // 29
-
-  //   //
-  //   std::vector<Point2f> court_points;
-
-  //   court_points.push_back(courtPoints[0]);    // 0
-  //   court_points.push_back(courtPoints[1]);   // 1
-  //   court_points.push_back(courtPoints[3]);   // 3
-  //   court_points.push_back(courtPoints[4]);  // 4
-  //   court_points.push_back(courtPoints[5]);   // 5
-  //   court_points.push_back(courtPoints[6]);  // 6
-  //   court_points.push_back(courtPoints[8]);   // 8
-  //   court_points.push_back(courtPoints[9]);  // 9
-  //   court_points.push_back(courtPoints[10]);   // 10
-  //   court_points.push_back(courtPoints[11]);  // 11
-  //   court_points.push_back(courtPoints[12]);   // 12
-  //   court_points.push_back(courtPoints[13]);  // 13
-  //   court_points.push_back(courtPoints[14]);   // 14
-  //   court_points.push_back(courtPoints[15]);  // 15
-  //   court_points.push_back(courtPoints[16]);    // 16
-  //   court_points.push_back(courtPoints[17]);    // 17
-  //   court_points.push_back(courtPoints[18]);    // 18
-  //   court_points.push_back(courtPoints[19]);    // 19
-  //   court_points.push_back(courtPoints[20]);    // 20
-  //   court_points.push_back(courtPoints[21]);    // 21
-  //   court_points.push_back(courtPoints[22]);    // 22
-  //   court_points.push_back(courtPoints[23]);    // 23
-  //   court_points.push_back(courtPoints[24]);    // 24
-  //   court_points.push_back(courtPoints[25]);   // 25
-  //   court_points.push_back(courtPoints[26]);    // 26
-  //   court_points.push_back(courtPoints[27]);    // 27
-  //   court_points.push_back(courtPoints[28]);    // 28
-  //   court_points.push_back(courtPoints[29]);  // 29
-
-  //   Mat H = findHomography(court_points, image_points);
-
-  //   image_points.resize(30);
-  //   perspectiveTransform(courtPoints, image_points, H);
-
-  //   float score = evaluateModel(image_points, binaryImage);
-
-  //    Mat image = rgbImage.clone();
-  //    drawModel(image_points, image);
-  //    displayImage("binaryImage", binaryImage);
-  //    displayImage("BadmintonCourt", image, 0);
-  // }
-
-
   float bestScore = GlobalParameters().initialFitScore;
   std::vector<Point2f> points = getIntersectionPoints(hLinePair, vLinePair);
   //TODO Check whether the intersection points make sense
